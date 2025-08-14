@@ -11,6 +11,7 @@ const sixty = document.getElementById("sixty");
 const singleChar = document.getElementById("singleChar");
 const pinyin = document.getElementById("pinyin");
 const soundToggle = document.getElementById("soundToggle");
+const charSpeakToggle = document.getElementById("charSpeakToggle");
 
 // 页面元素
 const mainPage = document.getElementById("mainPage");
@@ -30,6 +31,7 @@ const charPerMinute = document.getElementById("charPerMinute");
 let speechSynthesis = window.speechSynthesis;
 let speechUtterance = null;
 let soundEnabled = true; // 音效开关状态
+let charSpeakEnabled = true; // 字符朗读开关状态
 
 // 练习状态变量
 var wordNo = 1;
@@ -164,6 +166,62 @@ inputItem.addEventListener('input', function(event) {
   }
 });
 
+// 添加键盘焦点事件监听，当输入框获得焦点时读出当前需要输入的字符
+inputItem.addEventListener('focus', function() {
+  // 读出当前需要输入的字符
+  speakCurrentChar();
+});
+
+// 添加键盘按下事件监听，在输入前读出当前字符
+inputItem.addEventListener('keydown', function(event) {
+  // 如果不是特殊键（如方向键、功能键等），则读出当前字符
+  if (!event.ctrlKey && !event.altKey && !event.metaKey && 
+      event.key.length === 1 && event.key !== ' ') {
+    // 在输入前读出当前需要输入的字符
+    speakCurrentChar();
+  }
+});
+
+// 新增函数：读出当前需要输入的字符
+function speakCurrentChar() {
+  if (!soundEnabled || !charSpeakEnabled) return; // 如果音效或字符朗读关闭，直接返回
+  
+  const currentID = "word " + wordNo;
+  const currentSpan = document.getElementById(currentID);
+  if (currentSpan && speechSynthesis) {
+    const curSpanWord = currentSpan.innerText.trim();
+    
+    // 取消之前的语音
+    if (speechUtterance) {
+      speechSynthesis.cancel();
+    }
+    
+    // 根据练习类型调整朗读内容
+    let speakText = curSpanWord;
+    if (practiceType === "singleChar") {
+      // 单字符模式：对于空格使用描述性文本
+      if (curSpanWord === "空格") {
+        speakText = "空格";
+      } else {
+        speakText = curSpanWord;
+      }
+    } else {
+      // 拼音模式：直接读出拼音
+      speakText = curSpanWord;
+    }
+    
+    // 创建语音合成对象
+    speechUtterance = new SpeechSynthesisUtterance(speakText);
+    speechUtterance.rate = 1.0; // 正常语速
+    speechUtterance.pitch = 1.0; // 正常音调
+    speechUtterance.volume = 0.8; // 音量适中
+    speechUtterance.lang = 'zh-CN'; // 设置中文语音
+    
+    // 播放语音
+    speechSynthesis.speak(speechUtterance);
+  }
+}
+
 // 时间选择
 thirty.addEventListener("click", function() {
   timer = 30;
@@ -187,6 +245,13 @@ singleChar.addEventListener("click", function() {
   displayTest(practiceType);
   limitColor(singleChar, pinyin);
   singleChar.setAttribute('aria-label', '当前模式：单字符练习');
+  
+  // 切换模式后，如果字符朗读开启，读出第一个字符
+  setTimeout(() => {
+    if (charSpeakEnabled && soundEnabled) {
+      speakCurrentChar();
+    }
+  }, 300);
 });
 
 pinyin.addEventListener("click", function() {
@@ -194,6 +259,13 @@ pinyin.addEventListener("click", function() {
   displayTest(practiceType);
   limitColor(pinyin, singleChar);
   pinyin.setAttribute('aria-label', '当前模式：拼音练习');
+  
+  // 切换模式后，如果字符朗读开启，读出第一个字符
+  setTimeout(() => {
+    if (charSpeakEnabled && soundEnabled) {
+      speakCurrentChar();
+    }
+  }, 300);
 });
 
 // 音效开关
@@ -207,6 +279,20 @@ soundToggle.addEventListener("click", function() {
     soundToggle.innerText = "🔇 音效关闭";
     soundToggle.classList.remove("yellow");
     soundToggle.setAttribute('aria-label', '音效已关闭');
+  }
+});
+
+// 字符朗读开关
+charSpeakToggle.addEventListener("click", function() {
+  charSpeakEnabled = !charSpeakEnabled;
+  if (charSpeakEnabled) {
+    charSpeakToggle.innerText = "🔊 字符朗读开启";
+    charSpeakToggle.classList.add("yellow");
+    charSpeakToggle.setAttribute('aria-label', '字符朗读已开启');
+  } else {
+    charSpeakToggle.innerText = "🔇 字符朗读关闭";
+    charSpeakToggle.classList.remove("yellow");
+    charSpeakToggle.setAttribute('aria-label', '字符朗读已关闭');
   }
 });
 
@@ -240,6 +326,13 @@ restartBtn.addEventListener("click", function() {
   displayTest(practiceType);
   clearInterval(seconds);
   limitVisible();
+  
+  // 重新开始后，如果字符朗读开启，读出第一个字符
+  setTimeout(() => {
+    if (charSpeakEnabled && soundEnabled) {
+      speakCurrentChar();
+    }
+  }, 500);
 });
 
 // 开始计时器倒计时
@@ -384,6 +477,13 @@ function checkWord() {
   } else {
     const nextID = "word " + wordNo;
     colorSpan(nextID, 2);
+    
+    // 完成一个字符后，如果字符朗读开启，读出下一个字符
+    setTimeout(() => {
+      if (charSpeakEnabled && soundEnabled) {
+        speakCurrentChar();
+      }
+    }, 200);
   }
 }
 
@@ -420,6 +520,13 @@ function displayTest(type) {
 
   const nextID = "word " + wordNo;
   colorSpan(nextID, 2);
+  
+  // 显示新内容后，如果字符朗读开启，读出第一个字符
+  setTimeout(() => {
+    if (charSpeakEnabled && soundEnabled) {
+      speakCurrentChar();
+    }
+  }, 300);
 }
 
 // 生成练习内容

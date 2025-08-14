@@ -1,269 +1,135 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>盲人打字练习系统 - 功能测试</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            background: #f5f5f5;
-        }
-        .test-section {
-            background: white;
-            padding: 20px;
-            margin: 20px 0;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .test-button {
-            background: #007bff;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 4px;
-            cursor: pointer;
-            margin: 5px;
-        }
-        .test-button:hover {
-            background: #0056b3;
-        }
-        .status {
-            margin: 10px 0;
-            padding: 10px;
-            border-radius: 4px;
-        }
-        .success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-        .error {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-        .info {
-            background: #d1ecf1;
-            color: #0c5460;
-            border: 1px solid #bee5eb;
-        }
-    </style>
-</head>
-<body>
-    <h1>盲人打字练习系统 - 功能测试</h1>
-    
-    <div class="test-section">
-        <h2>1. 音效功能测试</h2>
-        <button class="test-button" onclick="testCorrectSound()">测试正确音效</button>
-        <button class="test-button" onclick="testErrorSound()">测试错误音效</button>
-        <button class="test-button" onclick="testSpeechSynthesis()">测试语音合成</button>
-        <div id="soundStatus"></div>
-    </div>
+<html lang="zh-CN" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="盲人打字练习系统字符朗读功能测试"/>
+    <title>字符朗读功能测试 - 盲人打字练习系统</title>
+    <link rel="icon" href="favicon.ico">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&family=Source+Code+Pro:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.3/css/all.css">
+  </head>
+  <body>
+    <div class="container-fluid box">
+      <div class="top">
+        <h1 class="yellow">字符朗读功能测试</h1>
+        <p style="text-align: center; color: #666666; margin: 20px 0;">
+          测试盲人打字练习系统的字符朗读功能
+        </p>
+      </div>
 
-    <div class="test-section">
-        <h2>2. 内容生成测试</h2>
-        <button class="test-button" onclick="testSingleCharGeneration()">测试单字符生成</button>
-        <button class="test-button" onclick="testPinyinGeneration()">测试拼音生成</button>
-        <div id="contentStatus"></div>
-    </div>
+      <!-- 功能说明 -->
+      <div style="margin: 40px 0; padding: 30px; background: #ffffff; border: 1px solid #e8e8e8; border-radius: 12px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);">
+        <h2 style="color: #1890ff; font-size: 1.5rem; margin-bottom: 20px; font-weight: 600;">🎯 功能说明</h2>
+        <p style="color: #333333; line-height: 1.6; margin-bottom: 20px;">
+          新增的字符朗读功能会在以下情况自动读出当前需要输入的字符：
+        </p>
+        <ul style="color: #333333; line-height: 1.6; margin-left: 20px;">
+          <li>输入框获得焦点时</li>
+          <li>按下键盘按键前</li>
+          <li>完成一个字符后</li>
+          <li>切换练习模式后</li>
+          <li>重新开始练习后</li>
+        </ul>
+      </div>
 
-    <div class="test-section">
-        <h2>3. 无障碍功能测试</h2>
-        <button class="test-button" onclick="testARIA()">测试ARIA标签</button>
-        <button class="test-button" onclick="testKeyboardNavigation()">测试键盘导航</button>
-        <div id="accessibilityStatus"></div>
-    </div>
+      <!-- 控制按钮 -->
+      <div style="text-align: center; margin: 30px 0;">
+        <button id="testCharSpeak" class="result-btn primary" style="margin: 0 10px;">
+          <i class="fas fa-volume-up"></i>
+          <span>测试字符朗读</span>
+        </button>
+        <button id="testPinyinSpeak" class="result-btn secondary" style="margin: 0 10px;">
+          <i class="fas fa-language"></i>
+          <span>测试拼音朗读</span>
+        </button>
+      </div>
 
-    <div class="test-section">
-        <h2>4. 浏览器兼容性测试</h2>
-        <button class="test-button" onclick="testBrowserCompatibility()">测试浏览器功能</button>
-        <div id="browserStatus"></div>
-    </div>
+      <!-- 测试结果 -->
+      <div id="testResult" style="margin: 40px 0; padding: 30px; background: #ffffff; border: 1px solid #e8e8e8; border-radius: 12px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06); display: none;">
+        <h3 style="color: #1890ff; margin-bottom: 15px;">测试结果</h3>
+        <p id="resultText" style="color: #333333; line-height: 1.6;"></p>
+      </div>
 
-    <div class="test-section">
-        <h2>5. 启动主系统</h2>
-        <button class="test-button" onclick="launchMainSystem()">启动盲人打字练习系统</button>
+      <!-- 返回链接 -->
+      <div class="center" style="margin: 40px 0;">
+        <a href="index.html" class="result-btn primary" style="display: inline-flex; align-items: center; gap: 10px;">
+          <i class="fas fa-arrow-left"></i>
+          <span>返回练习系统</span>
+        </a>
+      </div>
+
+      <footer class="center">
+        ©2021 <a class="grey" href="https://shreyagarwal13.github.io/shrey_personal_website/">Shrey Agarwal</a> | 盲人打字练习系统
+      </footer>
     </div>
 
     <script>
-        // 音效功能测试
-        function testCorrectSound() {
-            const status = document.getElementById('soundStatus');
-            try {
-                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                const oscillator = audioContext.createOscillator();
-                const gainNode = audioContext.createGain();
-                
-                oscillator.connect(gainNode);
-                gainNode.connect(audioContext.destination);
-                
-                oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
-                oscillator.type = 'sine';
-                
-                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
-                
-                oscillator.start(audioContext.currentTime);
-                oscillator.stop(audioContext.currentTime + 0.1);
-                
-                status.innerHTML = '<div class="status success">✅ 正确音效测试成功</div>';
-            } catch (e) {
-                status.innerHTML = '<div class="status error">❌ 正确音效测试失败: ' + e.message + '</div>';
-            }
-        }
+      // 语音合成API
+      let speechSynthesis = window.speechSynthesis;
+      let speechUtterance = null;
 
-        function testErrorSound() {
-            const status = document.getElementById('soundStatus');
-            try {
-                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                const oscillator = audioContext.createOscillator();
-                const gainNode = audioContext.createGain();
-                
-                oscillator.connect(gainNode);
-                gainNode.connect(audioContext.destination);
-                
-                oscillator.frequency.setValueAtTime(200, audioContext.currentTime);
-                oscillator.type = 'sawtooth';
-                
-                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
-                
-                oscillator.start(audioContext.currentTime);
-                oscillator.stop(audioContext.currentTime + 0.2);
-                
-                status.innerHTML += '<div class="status success">✅ 错误音效测试成功</div>';
-            } catch (e) {
-                status.innerHTML += '<div class="status error">❌ 错误音效测试失败: ' + e.message + '</div>';
-            }
+      // 测试字符朗读功能
+      document.getElementById('testCharSpeak').addEventListener('click', function() {
+        if (speechSynthesis) {
+          // 取消之前的语音
+          if (speechUtterance) {
+            speechSynthesis.cancel();
+          }
+          
+          // 测试朗读英文字符
+          speechUtterance = new SpeechSynthesisUtterance("A");
+          speechUtterance.rate = 1.0;
+          speechUtterance.pitch = 1.0;
+          speechUtterance.volume = 0.8;
+          speechUtterance.lang = 'en-US';
+          
+          speechSynthesis.speak(speechUtterance);
+          
+          showResult("已测试英文字符 'A' 的朗读功能");
+        } else {
+          showResult("您的浏览器不支持语音合成功能");
         }
+      });
 
-        function testSpeechSynthesis() {
-            const status = document.getElementById('soundStatus');
-            if ('speechSynthesis' in window) {
-                const utterance = new SpeechSynthesisUtterance('语音合成测试成功');
-                utterance.rate = 1.0;
-                utterance.pitch = 1.0;
-                utterance.volume = 0.8;
-                speechSynthesis.speak(utterance);
-                status.innerHTML += '<div class="status success">✅ 语音合成测试成功</div>';
-            } else {
-                status.innerHTML += '<div class="status error">❌ 语音合成不支持</div>';
-            }
+      // 测试拼音朗读功能
+      document.getElementById('testPinyinSpeak').addEventListener('click', function() {
+        if (speechSynthesis) {
+          // 取消之前的语音
+          if (speechUtterance) {
+            speechSynthesis.cancel();
+          }
+          
+          // 测试朗读拼音
+          speechUtterance = new SpeechSynthesisUtterance("你好");
+          speechUtterance.rate = 1.0;
+          speechUtterance.pitch = 1.0;
+          speechUtterance.volume = 0.8;
+          speechUtterance.lang = 'zh-CN';
+          
+          speechSynthesis.speak(speechUtterance);
+          
+          showResult("已测试中文拼音 '你好' 的朗读功能");
+        } else {
+          showResult("您的浏览器不支持语音合成功能");
         }
+      });
 
-        // 内容生成测试
-        function testSingleCharGeneration() {
-            const status = document.getElementById('contentStatus');
-            const keyboardChars = [
-                'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
-                'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
-                '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-                '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '_', '=', '+',
-                '[', ']', '{', '}', '\\', '|', ';', ':', '"', "'", ',', '.', '<', '>', '/', '?',
-                '`', '~', ' '
-            ];
-            
-            let sample = [];
-            for (let i = 0; i < 5; i++) {
-                const randomNumber = Math.floor(Math.random() * keyboardChars.length);
-                const char = keyboardChars[randomNumber];
-                if (char === ' ') {
-                    sample.push("空格");
-                } else {
-                    sample.push(char);
-                }
-            }
-            
-            status.innerHTML = '<div class="status success">✅ 单字符生成测试成功，示例: ' + sample.join(' ') + '</div>';
-        }
-
-        function testPinyinGeneration() {
-            const status = document.getElementById('contentStatus');
-            const pinyinContent = [
-                "ni hao", "wo shi", "xie xie", "bu ke qi", "zao shang hao"
-            ];
-            
-            const randomNumber = Math.floor(Math.random() * pinyinContent.length);
-            const sample = pinyinContent[randomNumber];
-            
-            status.innerHTML += '<div class="status success">✅ 拼音生成测试成功，示例: ' + sample + '</div>';
-        }
-
-        // 无障碍功能测试
-        function testARIA() {
-            const status = document.getElementById('accessibilityStatus');
-            const ariaElements = document.querySelectorAll('[aria-label], [aria-describedby], [role]');
-            
-            if (ariaElements.length > 0) {
-                status.innerHTML = '<div class="status success">✅ ARIA标签测试成功，找到 ' + ariaElements.length + ' 个ARIA元素</div>';
-            } else {
-                status.innerHTML = '<div class="status error">❌ 未找到ARIA标签</div>';
-            }
-        }
-
-        function testKeyboardNavigation() {
-            const status = document.getElementById('accessibilityStatus');
-            const focusableElements = document.querySelectorAll('button, a, input, textarea, [tabindex]');
-            
-            if (focusableElements.length > 0) {
-                status.innerHTML += '<div class="status success">✅ 键盘导航测试成功，找到 ' + focusableElements.length + ' 个可聚焦元素</div>';
-            } else {
-                status.innerHTML += '<div class="status error">❌ 未找到可聚焦元素</div>';
-            }
-        }
-
-        // 浏览器兼容性测试
-        function testBrowserCompatibility() {
-            const status = document.getElementById('browserStatus');
-            let results = [];
-            
-            // 测试Web Audio API
-            if (window.AudioContext || window.webkitAudioContext) {
-                results.push('✅ Web Audio API');
-            } else {
-                results.push('❌ Web Audio API');
-            }
-            
-            // 测试Speech Synthesis API
-            if ('speechSynthesis' in window) {
-                results.push('✅ Speech Synthesis API');
-            } else {
-                results.push('❌ Speech Synthesis API');
-            }
-            
-            // 测试ES6特性
-            try {
-                eval('const test = () => {};');
-                results.push('✅ ES6 Arrow Functions');
-            } catch (e) {
-                results.push('❌ ES6 Arrow Functions');
-            }
-            
-            // 测试CSS Grid
-            if (CSS.supports('display', 'grid')) {
-                results.push('✅ CSS Grid');
-            } else {
-                results.push('❌ CSS Grid');
-            }
-            
-            status.innerHTML = '<div class="status info">浏览器兼容性测试结果:</div>' + 
-                             results.map(result => '<div class="status">' + result + '</div>').join('');
-        }
-
-        // 启动主系统
-        function launchMainSystem() {
-            window.open('index.html', '_blank');
-        }
-
-        // 页面加载时自动运行一些测试
-        window.addEventListener('load', function() {
-            testBrowserCompatibility();
-            testARIA();
-        });
+      // 显示测试结果
+      function showResult(text) {
+        const resultDiv = document.getElementById('testResult');
+        const resultText = document.getElementById('resultText');
+        
+        resultText.textContent = text;
+        resultDiv.style.display = 'block';
+        
+        // 3秒后自动隐藏
+        setTimeout(() => {
+          resultDiv.style.display = 'none';
+        }, 3000);
+      }
     </script>
-</body>
+  </body>
 </html> 

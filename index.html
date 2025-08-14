@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="zh-CN" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="盲人打字练习系统，帮助盲人用户练习键盘熟悉度和拼音打字技能"/>
+
+    <title>盲人打字练习系统</title>
+
+    <link rel="icon" href="favicon.ico">
+
+    <!--Bootstrap 4 -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="styles.css">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&family=Source+Code+Pro:wght@300;400;700&display=swap" rel="stylesheet">
+    <!-- fontawesome -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.3/css/all.css" integrity="sha384-SZXxX4whJ79/gErwcOYf+zWLeJdY/qpuqC4cAa9rOGUstPomtqpuNWT9wdPEn2fk" crossorigin="anonymous">
+
+  </head>
+  <body>
+    <!-- 主练习页面 -->
+    <div id="mainPage" class="container-fluid box">
+      <div class="top">
+          <h1 id="heading" class="yellow" role="heading" aria-level="1">盲人打字练习系统</h1>
+          <div class="limits-box">
+            <div class="limit">
+              <a id="thirty" class="yellow" href="#" role="button" aria-label="30秒练习时间">30秒</a>
+              <a id="sixty" href="#" role="button" aria-label="60秒练习时间">60秒</a>
+            </div>
+            <div class="limit">
+              <a id="singleChar" class="yellow" href="#" role="button" aria-label="单字符练习模式，练习键盘熟悉度">单字符</a>
+              <a id="pinyin" href="#" role="button" aria-label="拼音练习模式，练习拼音打字">拼音</a>
+            </div>
+            <div class="limit">
+              <a id="soundToggle" class="yellow" href="#" role="button" aria-label="音效开关">🔊 音效开启</a>
+            </div>
+          </div>
+      </div>
+
+      <div class="stats center">
+        <div class="stat-block if">
+          <div id="timeName" class="stat-name yellow if">时间</div>
+          <div id="time" class="details if" aria-live="polite">30</div>
+        </div>
+
+        <div class="stat-block if">
+          <div id="cwName" class="stat-name yellow if">正确字符数</div>
+          <div id="cw" class="details if" aria-live="polite">0</div>
+        </div>
+      </div>
+
+      <div class="text-display" id="textDisplay" role="region" aria-label="练习内容显示区域">
+        <!-- 练习内容将在这里显示 -->
+      </div>
+
+      <div class="input-area center">
+        <textarea rows="1" class="text-input" id="textInput" autofocus autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" 
+                  role="textbox" aria-label="输入区域，请在此输入练习内容" aria-describedby="inputInstructions"></textarea>
+        <div id="inputInstructions" class="sr-only">输入区域，请按照上方显示的内容进行输入</div>
+      </div>
+
+      <div class="restart-button center">
+        <a id="restartBtn" class="current" href="#" role="button" aria-label="重新开始练习">
+          <i class="fas fa-redo"></i>
+        </a>
+      </div>
+
+      <footer class="center">©2021 <a class="grey" href="https://shreyagarwal13.github.io/shrey_personal_website/">Shrey Agarwal</a> | 盲人打字练习系统</footer>
+    </div>
+
+    <!-- 统计结果页面 -->
+    <div id="resultPage" class="container-fluid box" style="display: none;">
+      <div class="top">
+        <h1 class="yellow" role="heading" aria-level="1">
+          <i class="fas fa-chart-bar"></i> 练习结果统计
+        </h1>
+      </div>
+
+      <!-- 主要统计信息 -->
+      <div class="result-main-stats">
+        <div class="result-card primary">
+          <div class="result-icon">
+            <i class="fas fa-trophy"></i>
+          </div>
+          <div class="result-content">
+            <div class="result-label">练习模式</div>
+            <div id="practiceMode" class="result-value" aria-live="polite">单字符</div>
+          </div>
+        </div>
+
+        <div class="result-card primary">
+          <div class="result-icon">
+            <i class="fas fa-clock"></i>
+          </div>
+          <div class="result-content">
+            <div class="result-label">练习时间</div>
+            <div id="practiceTime" class="result-value" aria-live="polite">30秒</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 详细统计信息 -->
+      <div class="result-detail-stats">
+        <div class="result-card">
+          <div class="result-icon">
+            <i class="fas fa-keyboard"></i>
+          </div>
+          <div class="result-content">
+            <div class="result-label">总输入数</div>
+            <div id="totalInput" class="result-value" aria-live="polite">0</div>
+          </div>
+        </div>
+
+        <div class="result-card">
+          <div class="result-icon">
+            <i class="fas fa-check-circle"></i>
+          </div>
+          <div class="result-content">
+            <div class="result-label">正确输入数</div>
+            <div id="correctInput" class="result-value" aria-live="polite">0</div>
+          </div>
+        </div>
+
+        <div class="result-card highlight">
+          <div class="result-icon">
+            <i class="fas fa-percentage"></i>
+          </div>
+          <div class="result-content">
+            <div class="result-label">准确率</div>
+            <div id="accuracy" class="result-value" aria-live="polite">0%</div>
+          </div>
+        </div>
+
+        <div class="result-card highlight">
+          <div class="result-icon">
+            <i class="fas fa-tachometer-alt"></i>
+          </div>
+          <div class="result-content">
+            <div class="result-label">每分钟字符数</div>
+            <div id="charPerMinute" class="result-value" aria-live="polite">0</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 操作按钮 -->
+      <div class="result-actions">
+        <a id="backToPractice" class="result-btn secondary" href="#" role="button" aria-label="返回练习页面">
+          <i class="fas fa-arrow-left"></i>
+          <span>返回练习</span>
+        </a>
+        <a id="newPractice" class="result-btn primary" href="#" role="button" aria-label="开始新的练习">
+          <i class="fas fa-play"></i>
+          <span>新练习</span>
+        </a>
+      </div>
+
+      <footer class="center">©2021 <a class="grey" href="https://shreyagarwal13.github.io/shrey_personal_website/">Shrey Agarwal</a> | 盲人打字练习系统</footer>
+    </div>
+
+    <!-- Bootstrap script -->
+    <script src="https://code.jquery.com/jquery/3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+    <!-- My Javascript -->
+    <script src="app.js"></script>
+  </body>
+</html>

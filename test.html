@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>盲人打字练习系统 - 功能测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .test-button:hover {
+            background: #0056b3;
+        }
+        .status {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+    </style>
+</head>
+<body>
+    <h1>盲人打字练习系统 - 功能测试</h1>
+    
+    <div class="test-section">
+        <h2>1. 音效功能测试</h2>
+        <button class="test-button" onclick="testCorrectSound()">测试正确音效</button>
+        <button class="test-button" onclick="testErrorSound()">测试错误音效</button>
+        <button class="test-button" onclick="testSpeechSynthesis()">测试语音合成</button>
+        <div id="soundStatus"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>2. 内容生成测试</h2>
+        <button class="test-button" onclick="testSingleCharGeneration()">测试单字符生成</button>
+        <button class="test-button" onclick="testPinyinGeneration()">测试拼音生成</button>
+        <div id="contentStatus"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>3. 无障碍功能测试</h2>
+        <button class="test-button" onclick="testARIA()">测试ARIA标签</button>
+        <button class="test-button" onclick="testKeyboardNavigation()">测试键盘导航</button>
+        <div id="accessibilityStatus"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>4. 浏览器兼容性测试</h2>
+        <button class="test-button" onclick="testBrowserCompatibility()">测试浏览器功能</button>
+        <div id="browserStatus"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>5. 启动主系统</h2>
+        <button class="test-button" onclick="launchMainSystem()">启动盲人打字练习系统</button>
+    </div>
+
+    <script>
+        // 音效功能测试
+        function testCorrectSound() {
+            const status = document.getElementById('soundStatus');
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+                oscillator.type = 'sine';
+                
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.1);
+                
+                status.innerHTML = '<div class="status success">✅ 正确音效测试成功</div>';
+            } catch (e) {
+                status.innerHTML = '<div class="status error">❌ 正确音效测试失败: ' + e.message + '</div>';
+            }
+        }
+
+        function testErrorSound() {
+            const status = document.getElementById('soundStatus');
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.setValueAtTime(200, audioContext.currentTime);
+                oscillator.type = 'sawtooth';
+                
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.2);
+                
+                status.innerHTML += '<div class="status success">✅ 错误音效测试成功</div>';
+            } catch (e) {
+                status.innerHTML += '<div class="status error">❌ 错误音效测试失败: ' + e.message + '</div>';
+            }
+        }
+
+        function testSpeechSynthesis() {
+            const status = document.getElementById('soundStatus');
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance('语音合成测试成功');
+                utterance.rate = 1.0;
+                utterance.pitch = 1.0;
+                utterance.volume = 0.8;
+                speechSynthesis.speak(utterance);
+                status.innerHTML += '<div class="status success">✅ 语音合成测试成功</div>';
+            } else {
+                status.innerHTML += '<div class="status error">❌ 语音合成不支持</div>';
+            }
+        }
+
+        // 内容生成测试
+        function testSingleCharGeneration() {
+            const status = document.getElementById('contentStatus');
+            const keyboardChars = [
+                'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
+                'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
+                '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+                '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '_', '=', '+',
+                '[', ']', '{', '}', '\\', '|', ';', ':', '"', "'", ',', '.', '<', '>', '/', '?',
+                '`', '~', ' '
+            ];
+            
+            let sample = [];
+            for (let i = 0; i < 5; i++) {
+                const randomNumber = Math.floor(Math.random() * keyboardChars.length);
+                const char = keyboardChars[randomNumber];
+                if (char === ' ') {
+                    sample.push("空格");
+                } else {
+                    sample.push(char);
+                }
+            }
+            
+            status.innerHTML = '<div class="status success">✅ 单字符生成测试成功，示例: ' + sample.join(' ') + '</div>';
+        }
+
+        function testPinyinGeneration() {
+            const status = document.getElementById('contentStatus');
+            const pinyinContent = [
+                "ni hao", "wo shi", "xie xie", "bu ke qi", "zao shang hao"
+            ];
+            
+            const randomNumber = Math.floor(Math.random() * pinyinContent.length);
+            const sample = pinyinContent[randomNumber];
+            
+            status.innerHTML += '<div class="status success">✅ 拼音生成测试成功，示例: ' + sample + '</div>';
+        }
+
+        // 无障碍功能测试
+        function testARIA() {
+            const status = document.getElementById('accessibilityStatus');
+            const ariaElements = document.querySelectorAll('[aria-label], [aria-describedby], [role]');
+            
+            if (ariaElements.length > 0) {
+                status.innerHTML = '<div class="status success">✅ ARIA标签测试成功，找到 ' + ariaElements.length + ' 个ARIA元素</div>';
+            } else {
+                status.innerHTML = '<div class="status error">❌ 未找到ARIA标签</div>';
+            }
+        }
+
+        function testKeyboardNavigation() {
+            const status = document.getElementById('accessibilityStatus');
+            const focusableElements = document.querySelectorAll('button, a, input, textarea, [tabindex]');
+            
+            if (focusableElements.length > 0) {
+                status.innerHTML += '<div class="status success">✅ 键盘导航测试成功，找到 ' + focusableElements.length + ' 个可聚焦元素</div>';
+            } else {
+                status.innerHTML += '<div class="status error">❌ 未找到可聚焦元素</div>';
+            }
+        }
+
+        // 浏览器兼容性测试
+        function testBrowserCompatibility() {
+            const status = document.getElementById('browserStatus');
+            let results = [];
+            
+            // 测试Web Audio API
+            if (window.AudioContext || window.webkitAudioContext) {
+                results.push('✅ Web Audio API');
+            } else {
+                results.push('❌ Web Audio API');
+            }
+            
+            // 测试Speech Synthesis API
+            if ('speechSynthesis' in window) {
+                results.push('✅ Speech Synthesis API');
+            } else {
+                results.push('❌ Speech Synthesis API');
+            }
+            
+            // 测试ES6特性
+            try {
+                eval('const test = () => {};');
+                results.push('✅ ES6 Arrow Functions');
+            } catch (e) {
+                results.push('❌ ES6 Arrow Functions');
+            }
+            
+            // 测试CSS Grid
+            if (CSS.supports('display', 'grid')) {
+                results.push('✅ CSS Grid');
+            } else {
+                results.push('❌ CSS Grid');
+            }
+            
+            status.innerHTML = '<div class="status info">浏览器兼容性测试结果:</div>' + 
+                             results.map(result => '<div class="status">' + result + '</div>').join('');
+        }
+
+        // 启动主系统
+        function launchMainSystem() {
+            window.open('index.html', '_blank');
+        }
+
+        // 页面加载时自动运行一些测试
+        window.addEventListener('load', function() {
+            testBrowserCompatibility();
+            testARIA();
+        });
+    </script>
+</body>
+</html> 

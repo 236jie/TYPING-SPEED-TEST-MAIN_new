@@ -43,6 +43,7 @@ var factor = 2;
 var seconds;
 var practiceType = "singleChar"; // 练习类型：singleChar 或 pinyin
 var startTime = 0; // 练习开始时间
+var endTime = 0; // 练习结束时间
 
 // 键盘字符数组（用于单字符练习）
 const keyboardChars = [
@@ -51,7 +52,7 @@ const keyboardChars = [
   '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
   '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '_', '=', '+',
   '[', ']', '{', '}', '\\', '|', ';', ':', '"', "'", ',', '.', '<', '>', '/', '?',
-  '`', '~', ' '
+  '`', '~'
 ];
 
 // 拼音练习内容 - 单个拼音字符
@@ -199,11 +200,13 @@ function speakCurrentChar() {
     // 根据练习类型调整朗读内容
     let speakText = curSpanWord;
     if (practiceType === "singleChar") {
-      // 单字符模式：对于空格使用描述性文本
-      if (curSpanWord === "空格") {
-        speakText = "空格";
-      } else {
-        speakText = curSpanWord;
+      // 单字符模式：对于大写字母加上"大写"前缀
+      if (curSpanWord.length === 1) {
+        if (curSpanWord >= 'A' && curSpanWord <= 'Z') {
+          speakText = "大写" + curSpanWord;
+        } else {
+          speakText = curSpanWord;
+        }
       }
     } else {
       // 拼音模式：直接读出拼音
@@ -307,6 +310,8 @@ restartBtn.addEventListener("click", function() {
   wordsSubmitted = 0;
   wordsCorrect = 0;
   flag = 0;
+  startTime = 0; // 重置开始时间
+  endTime = 0; // 重置结束时间
 
   time.classList.remove("current");
   cw.classList.remove("current");
@@ -351,6 +356,9 @@ function timeStart() {
 function timeOver() {
   inputItem.disabled = true;
   restartBtn.focus();
+  
+  // 记录练习结束时间
+  endTime = Date.now();
 
   // 停止所有音效和语音
   if (speechSynthesis) {
@@ -400,8 +408,14 @@ function showResultPage() {
   mainPage.style.display = 'none';
   resultPage.style.display = 'block';
   
-  // 计算练习时间
-  const actualTime = timer - parseInt(time.innerText) || timer;
+  // 计算实际练习时间（从开始输入到结束输入）
+  let actualTime = 0;
+  if (startTime > 0 && endTime > 0) {
+    actualTime = Math.round((endTime - startTime) / 1000);
+  } else {
+    // 如果没有记录时间，使用预设的练习时间
+    actualTime = timer;
+  }
   
   // 填充统计结果
   practiceMode.innerText = practiceType === "singleChar" ? "单字符练习" : "拼音练习";
@@ -534,16 +548,11 @@ function generateContent(type) {
   var selectedContent = [];
   
   if (type === "singleChar") {
-    // 单字符模式：随机生成键盘字符
+    // 单字符模式：随机生成键盘字符（去除空格）
     for (var i = 0; i < 40; i++) {
       var randomNumber = Math.floor(Math.random() * keyboardChars.length);
       var char = keyboardChars[randomNumber];
-      // 对于空格，使用描述性文本
-      if (char === ' ') {
-        selectedContent.push("空格 ");
-      } else {
-        selectedContent.push(char + " ");
-      }
+      selectedContent.push(char + " ");
     }
   } else {
     // 拼音模式：随机选择拼音内容，每个拼音单独显示

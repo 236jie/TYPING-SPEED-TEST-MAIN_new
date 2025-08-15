@@ -397,7 +397,7 @@ function displayScore() {
   timeName.innerText = "准确率";
 
   cw.innerText = factor * wordsCorrect;
-  cwName.innerText = "平均每分钟正确字符数";
+  cwName.innerText = "每分钟字符数";
 
   // 显示结果页面
   showResultPage();
@@ -423,11 +423,12 @@ function showResultPage() {
   totalInput.innerText = wordsSubmitted;
   correctInput.innerText = wordsCorrect;
   accuracy.innerText = wordsSubmitted > 0 ? Math.floor((wordsCorrect / wordsSubmitted) * 100) + "%" : "0%";
-  charPerMinute.innerText = factor * wordsCorrect;
+  const avgCorrectPerMinute = actualTime > 0 ? Math.round((wordsCorrect * 60) / actualTime) : 0;
+  charPerMinute.innerText = avgCorrectPerMinute;
   
   // 语音播报结果
   if (speechSynthesis) {
-    const resultText = `练习完成。总输入${wordsSubmitted}个字符，正确${wordsCorrect}个，准确率${accuracy.innerText}，每分钟${charPerMinute.innerText}个字符。`;
+    const resultText = `练习完成。总输入${wordsSubmitted}个字符，正确${wordsCorrect}个，准确率${accuracy.innerText}，平均每分钟正确字符数${charPerMinute.innerText}个。`;
     speechUtterance = new SpeechSynthesisUtterance(resultText);
     speechUtterance.rate = 1.0;
     speechUtterance.pitch = 1.0;

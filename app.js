@@ -397,7 +397,7 @@ function displayScore() {
   timeName.innerText = "准确率";
 
   cw.innerText = factor * wordsCorrect;
-  cwName.innerText = "每分钟字符数";
+  cwName.innerText = "平均每分钟正确字符数";
 
   // 显示结果页面
   showResultPage();

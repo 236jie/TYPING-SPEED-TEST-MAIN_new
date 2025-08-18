@@ -183,6 +183,20 @@ inputItem.addEventListener('keydown', function(event) {
   }
 });
 
+// 描述单字符的中文读法
+function describeCharForSpeech(ch) {
+  const symbolMap = {
+    '!': '感叹号', '@': '艾特', '#': '井号', '$': '美元符号', '%': '百分号', '^': '脱字符', '&': '和号', '*': '星号',
+    '(': '左括号', ')': '右括号', '-': '减号', '_': '下划线', '=': '等号', '+': '加号',
+    '[': '左中括号', ']': '右中括号', '{': '左大括号', '}': '右大括号', '\\': '反斜杠', '|': '竖线',
+    ';': '分号', ':': '冒号', '"': '双引号', "'": '单引号', ',': '逗号', '.': '点', '<': '小于号', '>': '大于号',
+    '/': '斜杠', '?': '问号', '`': '反引号', '~': '波浪号'
+  };
+  if (ch >= 'A' && ch <= 'Z') return '大写' + ch;
+  if ((ch >= 'a' && ch <= 'z') || (ch >= '0' && ch <= '9')) return ch;
+  return symbolMap[ch] || ch;
+}
+
 // 新增函数：读出当前需要输入的字符
 function speakCurrentChar() {
   if (!soundEnabled || !charSpeakEnabled) return; // 如果音效或字符朗读关闭，直接返回
@@ -197,31 +211,41 @@ function speakCurrentChar() {
       speechSynthesis.cancel();
     }
     
-    // 根据练习类型调整朗读内容
-    let speakText = curSpanWord;
     if (practiceType === "singleChar") {
-      // 单字符模式：对于大写字母加上"大写"前缀
+      // 单字符模式：读“下一个字符 + 描述”，大写读作“下一个字符大写X”，符号读中文名
+      let description = curSpanWord;
       if (curSpanWord.length === 1) {
-        if (curSpanWord >= 'A' && curSpanWord <= 'Z') {
-          speakText = "大写" + curSpanWord;
-        } else {
-          speakText = curSpanWord;
-        }
+        description = describeCharForSpeech(curSpanWord);
       }
+      const speakText = "下一个字符" + description;
+      speechUtterance = new SpeechSynthesisUtterance(speakText);
+      speechUtterance.rate = 1.0; // 正常语速
+      speechUtterance.pitch = 1.0; // 正常音调
+      speechUtterance.volume = 0.8; // 音量适中
+      speechUtterance.lang = 'zh-CN'; // 中文提示
+      speechSynthesis.speak(speechUtterance);
     } else {
-      // 拼音模式：直接读出拼音
-      speakText = curSpanWord;
+      // 拼音模式：读“下一个字符”，随后逐字符拼读字母
+      const zhPrefix = new SpeechSynthesisUtterance('下一个字符');
+      zhPrefix.rate = 1.0;
+      zhPrefix.pitch = 1.0;
+      zhPrefix.volume = 0.8;
+      zhPrefix.lang = 'zh-CN';
+      
+      const spelledOut = curSpanWord.split('').join(' ');
+      const enLetters = new SpeechSynthesisUtterance(spelledOut);
+      enLetters.rate = 1.0;
+      enLetters.pitch = 1.0;
+      enLetters.volume = 0.8;
+      enLetters.lang = 'en-US';
+      
+      // 依次播报
+      speechSynthesis.speak(zhPrefix);
+      speechSynthesis.speak(enLetters);
+      
+      // 记录最后一个utterance，便于后续cancel
+      speechUtterance = enLetters;
     }
-    
-    // 创建语音合成对象
-    speechUtterance = new SpeechSynthesisUtterance(speakText);
-    speechUtterance.rate = 1.0; // 正常语速
-    speechUtterance.pitch = 1.0; // 正常音调
-    speechUtterance.volume = 0.8; // 音量适中
-    speechUtterance.lang = 'zh-CN'; // 设置中文语音
-    
-    // 播放语音
-    speechSynthesis.speak(speechUtterance);
   }
 }
 
